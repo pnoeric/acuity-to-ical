@@ -22,9 +22,8 @@ const APPT_SUMMARY = "Gym - train w/Luke";
 const APPT_LOCATION = "Friedaustrasse 12, 8003 Zürich";
 
 // Acuity Scheduling URL - where you go to see all your appointments in Acuity
-var base_url = "https://app.acuityscheduling.com/"; // this one probably does not change
-var main_url = "schedule.php?owner=12169722"; // this one will probably change
-var login_url = "client-login.php?owner=12169722";
+var base_url = process.env.ACUITY_BASE_URL;
+var login_url = process.env.ACUITY_LOGIN_URL;
 
 var debug = 0;
 
@@ -105,10 +104,10 @@ app.get("/", function (req, response) {
         fs.closeSync(fs.openSync(outpath, "w"));
 
         // fetch login page for Acuity
-        console.log("Getting login page @ " + base_url + login_url);
+        console.log("Getting login page @ " + login_url);
 
         request
-            .get(base_url + login_url)
+            .get( login_url)
             .withCredentials()
             .then(res => {
                 // res.text, res.headers, res.status
