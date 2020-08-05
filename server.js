@@ -43,8 +43,8 @@ app.use(express.static('public'))
 var outpath = __dirname + '/' + process.env.ICS_FILENAME
 console.log('ICS file will be saved at ' + outpath)
 
-var username = process.env.ACUITY_USERNAME
-var password = process.env.ACUITY_PASSWORD
+var username = process.env.CALENDAR_USERNAME
+var password = process.env.CALENDAR_PASSWORD
 
 var basicAuth = require('basic-auth')
 app.use(function (request, response, next) {
@@ -326,6 +326,6 @@ app.get('/', function (req, response) {
 exports = module.exports = app
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, 'ericmueller.org', function () {
+var listener = app.listen(process.env.ENDPOINT_PORT, process.env.ENDPOINT_HOSTNAME, function () {
   console.log('Your app is listening to ericmueller.org:' + listener.address().port)
 })
