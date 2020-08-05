@@ -281,7 +281,7 @@ app.get("/", function (req, response) {
                             // err.message, err.response
                             console.log("Error loading logged-in page: " + err.message);
                             console.log(err.response);
-                            return;
+
                         });
                 });
             })
@@ -327,6 +327,6 @@ app.get("/", function (req, response) {
 exports = module.exports = app;
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
-    console.log("Your app is listening on port " + listener.address().port);
+var listener = app.listen(process.env.PORT, 'ericmueller.org', function () {
+    console.log("Your app is listening to ericmueller.org:" + listener.address().port);
 });
