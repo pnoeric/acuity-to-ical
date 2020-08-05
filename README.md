@@ -8,7 +8,7 @@ I use it for my personal trainer - I book my appointments with him on his Acuity
 
 1. You have to run this using node on your own server.
 
-2. Set up the .env file as directed
+2. Make a copy of the `.env.example` file and rename it to `.env` then edit as directed
 
 3. When you visit the URL, you will receive an ICS (iCal) file in return. So just add the URL as a subscription in your favorite calendar app.
 
