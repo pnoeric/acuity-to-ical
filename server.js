@@ -13,7 +13,7 @@ const tz = require('moment-timezone')
 require('dotenv').config()
 
 // how long to cache the output file?
-const CACHE_MINUTES = 120
+const CACHE_MINUTES = process.env['NEVER_CACHE'] ? 0 : 120
 
 // title for each event created
 const APPT_SUMMARY = 'Gym - train w/Luke'
@@ -119,18 +119,16 @@ app.get('/', function (req, response) {
         $('form').filter(function () {
           var data = $(this)
           var post_url = data.attr('action')
+
+          const credentials = { username: process.env.ACUITY_USERNAME, password: process.env.ACUITY_PASSWORD }
+
           console.log('Form post url = ' + post_url)
-          console.log('Posting credentials back now...')
+          console.log('Posting credentials back now...', credentials)
 
           request
             .post(base_url + post_url)
             .type('form')
-            .send({
-              username: process.env.ACUITY_USERNAME
-            })
-            .send({
-              password: process.env.ACUITY_PASSWORD
-            })
+            .send(credentials)
             .send({
               client_login: '1'
             })
@@ -280,6 +278,7 @@ app.get('/', function (req, response) {
               // err.message, err.response
               console.log('Error loading logged-in page: ' + err.message)
               console.log(err.response)
+              console.log(res.text)
 
             })
         })
@@ -327,5 +326,5 @@ exports = module.exports = app
 
 // listen for requests :)
 var listener = app.listen(process.env.ENDPOINT_PORT, process.env.ENDPOINT_HOSTNAME, function () {
-  console.log('Your app is listening to ericmueller.org:' + listener.address().port)
+  console.log('Your app is listening to ' + process.env.ENDPOINT_HOSTNAME + ':' + listener.address().port)
 })

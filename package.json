@@ -14,7 +14,7 @@
         "fs-exists-sync": "^0.1.0",
         "ical-toolkit": "^1.0.9",
         "moment": "^2.22.1",
-        "moment-timezone": "^0.5.16",
+        "moment-timezone": "^0.5",
         "request": "^2.85.0",
         "superagent": "^3.8.2",
         "util": "^0.10.3"
