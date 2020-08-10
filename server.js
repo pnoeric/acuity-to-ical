@@ -141,8 +141,8 @@ app.get('/', function (req, response) {
               )
 
               // SO NOW in theory we are logged in....
-              console.log(res.text);
-              
+              console.log(res.text)
+
               // WOW!!!!! we have made it this far, now let's get ready to write out iCal file
 
               var builder = icalToolkit.createIcsFileBuilder()
