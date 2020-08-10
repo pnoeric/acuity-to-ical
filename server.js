@@ -76,7 +76,7 @@ app.get('/', function (req, response) {
   if (!doit) {
     // file does exist - check its age
     var mtime = new Date(util.inspect(stats.mtime)) // ex: 2018-04-22T18:41:58.844Z
-    console.log(mtime)
+    // console.log(mtime)
 
     var d2 = new Date()
     var d1 = new Date(mtime.toString())
@@ -112,7 +112,7 @@ app.get('/', function (req, response) {
       .then(res => {
         // res.text, res.headers, res.status
 
-        console.log('Result status ' + res.status)
+        // console.log('Result status ' + res.status)
         //				console.log('Result headers ');
         //				console.log(res.headers);
         console.log('Finding form...')
@@ -181,10 +181,11 @@ app.get('/', function (req, response) {
                 // response.write( data.text() + "<br>" );
 
                 // get the URL to edit this appointment
-                var edit_url = data
+                const edit_url = data
                   .children()
                   .first()
                   .attr('href')
+                  .replace(/^\/+/g, '')   // remove leading slash
                 // <a href="schedule.php?action=appt&amp;owner=12169722&amp;id%5B%5D=75dc4df18c9c24e0dd8872254f6636a1&amp;PHPSESSID=v07144uup6tgl0fs483seoe5r3" data-original-text="March 20, 2018 18:15">March 20, 2018 18:15</a>
 
                 console.log('edit_url is ' + edit_url)
@@ -208,6 +209,9 @@ app.get('/', function (req, response) {
                       .add(1, 'hour')
 
                     var end_date = end_date_moment.toDate()
+
+                    const nowStr = new Date().toLocaleString()
+                    const descrString = 'To change appointment, visit ' + base_url + edit_url + '\n\nSynced at: ' + nowStr
 
                     console.log('End moment: ' + end_date_moment.format())
                     console.log('End: ' + end_date)
@@ -234,7 +238,7 @@ app.get('/', function (req, response) {
 
                       //Optional description of event.
                       description:
-                        'To change appointment, visit ' + base_url + edit_url,
+                      descrString,
 
                       //What to do on addition
                       method: 'PUBLISH',
