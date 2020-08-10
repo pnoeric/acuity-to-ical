@@ -43,16 +43,13 @@ app.use(express.static('public'))
 var outpath = __dirname + '/' + process.env.ICS_FILENAME
 console.log('ICS file will be saved at ' + outpath)
 
-var username = process.env.CALENDAR_USERNAME
-var password = process.env.CALENDAR_PASSWORD
-
 var basicAuth = require('basic-auth')
 app.use(function (request, response, next) {
   var user = basicAuth(request)
   if (
     !user ||
-    user.name !== process.env.AUTH_USERNAME ||
-    user.pass !== process.env.AUTH_PASSWORD
+    user.name !== process.env.CALENDAR_USERNAME ||
+    user.pass !== process.env.CALENDAR_PASSWORD
   ) {
     response.set('WWW-Authenticate', 'Basic realm="site"')
     return response.status(401).send()
@@ -129,10 +126,10 @@ app.get('/', function (req, response) {
             .post(base_url + post_url)
             .type('form')
             .send({
-              username: username
+              username: process.env.ACUITY_USERNAME
             })
             .send({
-              password: password
+              password: process.env.ACUITY_PASSWORD
             })
             .send({
               client_login: '1'
