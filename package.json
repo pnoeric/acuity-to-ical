@@ -6,16 +6,17 @@
         "start": "node server.js"
     },
     "dependencies": {
+        "axios": "^0.19.2",
         "basic-auth": "^2.0.0",
         "cheerio": "^0.22.0",
         "dotenv": "^8.2.0",
-        "express": "^4.16.3",
+        "express": "^4",
         "fs": "^0.0.2",
         "fs-exists-sync": "^0.1.0",
         "ical-toolkit": "^1.0.9",
         "moment": "^2.22.1",
         "moment-timezone": "^0.5",
-        "request": "^2.85.0",
+        "request": "^2.88",
         "superagent": "^3.8.2",
         "util": "^0.10.3"
     },
