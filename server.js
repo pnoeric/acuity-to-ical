@@ -237,8 +237,7 @@ app.get('/', function (req, response) {
                       location: APPT_LOCATION,
 
                       //Optional description of event.
-                      description:
-                      descrString,
+                      description: descrString,
 
                       //What to do on addition
                       method: 'PUBLISH',
