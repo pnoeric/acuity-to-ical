@@ -122,7 +122,7 @@ app.get('/', function (req, response) {
 
           const credentials = { username: process.env.ACUITY_USERNAME, password: process.env.ACUITY_PASSWORD }
 
-          console.log('Form post url = ' + post_url)
+          console.log('Form post url = ' + base_url + post_url)
           console.log('Posting credentials back now...', credentials)
 
           request
@@ -140,6 +140,9 @@ app.get('/', function (req, response) {
                 res.type
               )
 
+              // SO NOW in theory we are logged in....
+              console.log(res.text);
+              
               // WOW!!!!! we have made it this far, now let's get ready to write out iCal file
 
               var builder = icalToolkit.createIcsFileBuilder()
