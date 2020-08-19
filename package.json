@@ -1,7 +1,7 @@
 {
     "name": "acuity-to-ical",
     "version": "0.0.1",
-    "description": "Eric's project",
+    "description": "Acuity to iCal",
     "scripts": {
         "start": "node server.js"
     },
@@ -20,10 +20,6 @@
         "superagent": "^3.8.2",
         "util": "^0.10.3"
     },
-    "repository": {
-        "url": "https://glitch.com/edit/#!/acuity-to-ical"
-    },
-    "license": "MIT",
     "keywords": [
         "node",
         "glitch",
