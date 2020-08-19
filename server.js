@@ -4,15 +4,19 @@
  */
 
 const axios = require('axios').default
+axios.defaults.withCredentials = true
+
+const FormData = require('form-data');
 const axiosCookieJarSupport = require('axios-cookiejar-support').default
 const tough = require('tough-cookie')
 
 axiosCookieJarSupport(axios)
 
+require('axios-debug-log')
+
 const express = require('express')
 const app = express()
 var fs = require('fs')
-var exists = require('fs-exists-sync')
 var superagent = require('superagent')
 var cheerio = require('cheerio')
 var icalToolkit = require('ical-toolkit')
@@ -117,12 +121,15 @@ app.get('/', async function (req, response) {
 		// fetch login page for Acuity
 		console.log('Getting login page @ ' + login_url)
 
+		const cookieJar = new tough.CookieJar()
 		await axios.get(login_url, {
+			           jar: cookieJar,
 			           withCredentials: true,
 		           })
 		           .then(res => {
 			           // res.data, res.headers, res.status
-
+			           console.log('Headers', res.headers)
+			           console.log(cookieJar)
 			           // console.log(res);
 			           // console.log('Result status ' + res.status)
 			           // console.log('Result headers ')
@@ -136,24 +143,26 @@ app.get('/', async function (req, response) {
 				           var data = $(this)
 				           var post_url = data.attr('action')
 
-				           const credentials = {
-					           username: process.env.ACUITY_USERNAME,
-					           password: process.env.ACUITY_PASSWORD
-				           }
+				           // console.log('Form post url = ' + base_url + post_url)
+				           console.log('Logging in...')
 
-				           console.log('Form post url = ' + base_url + post_url)
-				           console.log('Posting credentials back now...', credentials)
+				           console.log('Cookie jar BEFORE login:', cookieJar)
+
+				           const formData = new FormData()
+				           formData.append('username', process.env.ACUITY_USERNAME)
+				           formData.append('password', process.env.ACUITY_PASSWORD)
+				           formData.append('client_login', '1')
 
 				           await axios.post(base_url + post_url,
+				           formData,
 				           {
-					           ...credentials,
-					           client_login: '1'
-				           },
-				           {
+					           jar: cookieJar,
 					           withCredentials: true
 				           }).then(res => {
 					           console.log('Finished with logging in, result status = ' + res.status)
+					           console.log('Headers', res.headers)
 
+					           console.log('Cookie jar AFTER login:', cookieJar)
 					           // SO NOW in theory we are logged in....
 					           // console.log(res.data)
 
@@ -180,7 +189,7 @@ app.get('/', async function (req, response) {
 
 					           console.log('Starting appointment loop')
 
-					           console.log(res)
+					           // console.log(res)
 
 					           var $ = cheerio.load(res.data)
 
