@@ -1,4 +1,13 @@
-// init project
+/**
+ * acuty-to-ical
+ *
+ * TODO change to axios instead of 'request' server...
+ * because we need to wait for results... right now it doesn't and everyting is a little janky
+ *
+ * @type {e | (() => Express)}
+ */
+
+
 const express = require('express')
 const app = express()
 var fs = require('fs')
@@ -49,11 +58,7 @@ console.log('ICS file will be saved at ' + outpath)
 var basicAuth = require('basic-auth')
 app.use(function (request, response, next) {
 	var user = basicAuth(request)
-	if (
-	!user ||
-	user.name !== process.env.CALENDAR_USERNAME ||
-	user.pass !== process.env.CALENDAR_PASSWORD
-	) {
+	if (!user || user.name !== process.env.CALENDAR_USERNAME || user.pass !== process.env.CALENDAR_PASSWORD) {
 		response.set('WWW-Authenticate', 'Basic realm="site"')
 		return response.status(401).send()
 	}
@@ -130,8 +135,7 @@ app.get('/', function (req, response) {
 				.send(credentials)
 				.send({
 					client_login: '1'
-				})
-				.then(res => {
+				}).then(res => {
 					console.log(
 					'Finished with logging in, result status = ' +
 					res.status +
@@ -256,8 +260,7 @@ app.get('/', function (req, response) {
 								})
 							}
 						}
-					}
-					)
+					})
 
 					// generate ICS file
 					icsFileContent = builder.toString()
@@ -283,22 +286,14 @@ app.get('/', function (req, response) {
 						'The ICS file has been cached to disk at ' + outpath
 						)
 					})
-				}
-				)
-				.catch(err => {
-					// err.message, err.response
-					console.log('Error loading logged-in page: ' + err.message)
-					console.log(err.response)
-					// console.log(res.text)
-
+				}).catch(err => {
+					console.log('Error loading logged-in page ' + base_url + post_url + ': ' + err.message)
+					console.log('We are probably already logged in? So keep going...')
 				})
-			}
-			)
-		}
-		)
-		.catch(err => {
+			})
+		}).catch(err => {
 			// err.message, err.response
-			return console.log('Error loading login page: ' + err.message)
+			console.log('Error loading login page: ' + err.message)
 		})
 	} else {
 		console.log(
