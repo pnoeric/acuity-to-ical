@@ -6,25 +6,30 @@
 const axios = require('axios').default
 axios.defaults.withCredentials = true
 
-const FormData = require('form-data');
+const FormData = require('form-data')
 const axiosCookieJarSupport = require('axios-cookiejar-support').default
 const tough = require('tough-cookie')
 
 axiosCookieJarSupport(axios)
 
-require('axios-debug-log')
+// require('axios-debug-log')
+
+const curlirize = require('axios-curlirize')
+
+// initializing axios-curlirize with your axios instance
+curlirize(axios)
 
 const express = require('express')
 const app = express()
+
 var fs = require('fs')
-var superagent = require('superagent')
 var cheerio = require('cheerio')
 var icalToolkit = require('ical-toolkit')
 var moment = require('moment')
 var util = require('util')
 const tz = require('moment-timezone')
 
-env = require('dotenv').config()
+const env = require('dotenv').config()
 
 // title for each event created
 const APPT_SUMMARY = process.env.TITLE
@@ -40,9 +45,6 @@ var debug = 0
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// we do this so we can save cookies
-const request = superagent.agent()
-
 var icsFileContent = ''
 
 // sample login page for Acuity:
@@ -53,9 +55,9 @@ app.use(express.static('public'))
 // location on server to cache output file
 var outpath = __dirname + '/' + process.env.ICS_FILENAME
 
-console.log('STARTUP')
-console.log('Cache length ' + process.env.CACHE_LIFETIME_IN_MINUTES + ' minutes')
-console.log('ICS file will be saved at ' + outpath)
+console.log('--- START ---')
+console.log('Cache lifetime: ' + process.env.CACHE_LIFETIME_IN_MINUTES + ' minutes')
+console.log('ICS file location: ' + outpath)
 
 var basicAuth = require('basic-auth')
 app.use(function (request, response, next) {
@@ -66,8 +68,6 @@ app.use(function (request, response, next) {
 	}
 	return next()
 })
-
-// var j = request.jar();
 
 app.get('/', async function (req, response) {
 	let breakCache = false
@@ -114,36 +114,36 @@ app.get('/', async function (req, response) {
 		'[CACHE] ' + min + ' minute' + s + ' since we generated cache file; serving it...'
 		)
 	} else {
-		console.log('Generating new cache file...')
+		console.log('*** Parsing appointments and generating new cache file...')
 
+		// touch the output file
 		fs.closeSync(fs.openSync(outpath, 'w'))
 
 		// fetch login page for Acuity
 		console.log('Getting login page @ ' + login_url)
 
 		const cookieJar = new tough.CookieJar()
+
 		await axios.get(login_url, {
 			           jar: cookieJar,
 			           withCredentials: true,
 		           })
 		           .then(res => {
 			           // res.data, res.headers, res.status
-			           console.log('Headers', res.headers)
-			           console.log(cookieJar)
+			           // console.log('Headers after GETTING login page', res.headers)
 			           // console.log(res);
 			           // console.log('Result status ' + res.status)
-			           // console.log('Result headers ')
-			           // console.log(res.headers)
-			           console.log('Finding form...')
+
+			           console.log('Finding login form...')
 
 			           // console.log(res.data)
 			           var $ = cheerio.load(res.data)
 
 			           $('form').filter(async function () {
 				           var data = $(this)
-				           var post_url = data.attr('action')
+				           const post_url = data.attr('action')
 
-				           // console.log('Form post url = ' + base_url + post_url)
+				           console.log('Form post url = ' + base_url + post_url)
 				           console.log('Logging in...')
 
 				           console.log('Cookie jar BEFORE login:', cookieJar)
@@ -156,13 +156,13 @@ app.get('/', async function (req, response) {
 				           await axios.post(base_url + post_url,
 				           formData,
 				           {
+					           headers: { 'Content-Type': 'multipart/form-data' },
 					           jar: cookieJar,
 					           withCredentials: true
 				           }).then(res => {
 					           console.log('Finished with logging in, result status = ' + res.status)
-					           console.log('Headers', res.headers)
 
-					           console.log('Cookie jar AFTER login:', cookieJar)
+					           // console.log('Cookie jar AFTER login:', cookieJar)
 					           // SO NOW in theory we are logged in....
 					           // console.log(res.data)
 
