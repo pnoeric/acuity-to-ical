@@ -45,9 +45,9 @@ app.use(function (request, response, next) {
 
 app.get('/', async function (req, response) {
 	const fs = require('fs')
-
 	let breakCache
 
+	console.log('\n*** Received request for ICS file')
 	if (process.env.NEVER_CACHE === 'true') {
 		breakCache = true
 	} else {
@@ -57,7 +57,7 @@ app.get('/', async function (req, response) {
 	}
 
 	if (!(debug || breakCache)) {
-		console.log('[CACHE] ' + min + ' minute' + s + ' since we generated cache file; serving it...')
+		console.log('Cached file is still fresh; serving it...')
 	} else {
 		console.log('*** Parsing appointments and generating new cache file...')
 

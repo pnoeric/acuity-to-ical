@@ -1,5 +1,5 @@
 const superagent = require('superagent')
-const fs = require('fs').promises
+const fs = require('fs')
 const moment = require('moment')
 const tz = require('moment-timezone')
 const util = require('util')
@@ -22,8 +22,6 @@ async function doLogin (post_url) {
 }
 
 async function saveFile (data, outputPath) {
-	const fs = require('fs')
-
 	fs.closeSync(fs.openSync(outputPath, 'w'))
 	fs.writeFile(outputPath, data, function (err) {
 		if (err) {
@@ -37,11 +35,7 @@ async function saveFile (data, outputPath) {
 
 function findPostUrl (loginPageHtml) {
 	const $ = cheerio.load(loginPageHtml)
-	const base_url = process.env.ACUITY_BASE_URL
-
-	const post_url = base_url + $('form').attr('action')
-
-	console.log('Form post url = ' + post_url)
+	const post_url = $('form').attr('action')
 
 	return post_url
 }
@@ -205,11 +199,12 @@ function parseAppointments (rawHtml) {
 module.exports = {
 
 	checkCacheFile: async function (outputPath) {
+
 		let breakCache
 
 		// first check if cache file even exists and isn't empty
 		try {
-			const stats = await fs.statSync(outputPath)
+			let stats = fs.statSync(outputPath)
 			breakCache = (stats.size === 0)
 
 			// file does exist - check its age
@@ -234,18 +229,16 @@ module.exports = {
 
 		} catch (err) {
 			breakCache = true
-
-			console.log('Cache file not found.')
+			console.log('Cache file not found.', err)
 		}
 
 		return breakCache
 	},
 
 	buildFile: async function (outputPath) {
-		const fs = require('fs')
-
 		// Acuity Scheduling URL - where you go to see all your appointments in Acuity
 		const login_url = process.env.ACUITY_LOGIN_URL
+		const base_url = process.env.ACUITY_BASE_URL
 
 		// touch the output file
 		fs.closeSync(fs.openSync(outputPath, 'w'))
@@ -262,15 +255,14 @@ module.exports = {
 
 		let rawHtmlWithAllAppointments
 
-		if (post_url !== 'undefined') {
+		if (typeof post_url !== 'undefined') {
 
-			console.log('Found post_url: ' + post_url)
 			console.log('Logging in...')
-
-			rawHtmlWithAllAppointments = await doLogin(post_url)
+			rawHtmlWithAllAppointments = await doLogin(base_url + post_url)
 
 		} else {
 
+			console.log('Looks like we\'re already logged in, keep going...')
 			rawHtmlWithAllAppointments = loginPageHtml
 		}
 
